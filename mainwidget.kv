@@ -1,0 +1,44 @@
+#:kivy 1.11.1
+<MainWidget>:
+    orientation: 'vertical'
+    canvas:
+        Color:
+            rgb: 0.5,0.5,0.53 # tom cinza
+        Rectangle:
+            size: self.size # todo o plano de fundo do mainwidget
+    BoxLayout: # barra superior
+        orientation:'horizontal' 
+        size_hint: (1,0.1) # relativo ao MainWidget (10% em relacao ao eixo y)
+        spacing: 10
+        Label:
+            text: 'SUPERVISÓRIO RESERVATÓRIO v1.0'
+            size_hint_x: None
+            width: 300
+        BoxLayout: # parte da direita do cabecalho 
+            orientation:'vertical'
+            size_hint_x: None
+            width: 400
+            Label:
+                text: 'Configurações'
+            BoxLayout:
+                orientation:'horizontal'
+                Button:
+                    text: "MODBUS"
+                    on_release: root._modbusPopup.open()
+                Button:
+                    text: "Scan time"
+                    on_release: root._scanPopup.open()
+        Image: # terceira coisa na horizontal do cabecalho
+            id: img_con
+            size_hint_x: None
+            width: 80
+            source: 'imgs/desconectado.png'
+            pos_hint: {'top':1, 'right':1}
+    FloatLayout:
+        canvas:
+            Color:
+                rgb: 1,1,1
+            Rectangle:
+                size: self.size
+        Image:
+            source: 'imgs/planodefundotemp.png'            
