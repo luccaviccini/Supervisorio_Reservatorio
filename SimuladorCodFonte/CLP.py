@@ -64,6 +64,10 @@ class CLP():
         self.__server.data_bank.set_input_registers(801, (self.__tank.motor.getTensao()+ randrange(-3,4),))
         self.__server.data_bank.set_input_registers(802, (self.__tank.motor.getTorque(),))
         self.__server.data_bank.set_input_registers(800,(max(self.__tank.motor.getOpFrequencia()+ randrange(-3,4),0),))
+        print('=====================')
+        print(f'Holding Registers\r\n R1000: {self.__tank.motor.getOpFrequencia()}')
+        
+
         self.__server.data_bank.set_input_registers(803, (max(self.__tank.motor.getRotacao() + randrange(-3,4),0),))
         self.__server.data_bank.set_input_registers(804,(max(self.__tank.motor.getInPower()+ randrange(-3,4),0),))
         self.__server.data_bank.set_input_registers(805, (max(self.__tank.motor.getCorrente() + 10*randrange(-2,2),0),))

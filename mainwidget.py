@@ -70,6 +70,8 @@ class MainWidget(BoxLayout):
         """
         try:
             while(self._updateWidgets):
+                #escrever no modbus_addrs
+                self.writeData('coil', 800, 1)
                 # ler os dados MODBUS
                 self.readData()
                 # atualizar a interface
@@ -90,16 +92,26 @@ class MainWidget(BoxLayout):
             if value['type'] == 'input_r':
                 self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
                 print(key, self._meas['values'][key])
+
             elif value['type'] == 'holding':  
                 self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
                 print(key, self._meas['values'][key])
+
             elif value['type'] == 'coil':
                 self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
                 print(key, self._meas['values'][key])
+
             else:
                 self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
                 print(key, self._meas['values'][key])
-    
+    def writeData(self, type, addr, value):
+        """
+        Método para escrita de dados  por meio do protocolo MODBUS
+        """
+
+        if type == 'coil':
+            return self._modbusClient.write_single_coil(addr, value)
+          
     def updateGUI(self):
         """
         Método para atualização da interface gráfica a partir dos dados lidos 
