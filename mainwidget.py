@@ -4,6 +4,8 @@ from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
 from time import sleep
+from datetime import datetime
+import random
 
 
 class MainWidget(BoxLayout):
@@ -12,6 +14,7 @@ class MainWidget(BoxLayout):
     """
     _updateThread = None
     _updateWidgets = True
+    _tags ={}
     
     
     def __init__(self, **kwargs):
@@ -25,6 +28,16 @@ class MainWidget(BoxLayout):
         self._modbusPopup = ModbusPopup(self._serverIP,self._serverPort)
         self._scanPopup = ScanPopup(scantime = self._scan_time)
         self._modbusClient = ModbusClient(host = self._serverIP,port = self._serverPort)
+        self._meas = {} # Esse atributo irá possuir as medições atuais (Dicionário)
+        self._meas['timestamp'] = None # Irá possuir um campo chamado 'timestamp'
+        self._meas['values'] = {} # Irá possuir um campo chamado 'values', os valores das várias tags do sistema
+
+        for key,value in kwargs.get('modbus_addrs').items(): # Fazemos uma leitura no dicionário 'modbus_addrs'
+            if key == 'estado_mot': # Se a tag for 'estado_mot', faça...
+                plot_color = (1,0,0,1)
+            else:
+                plot_color = (random.random(),random.random(),random.random(),1)
+            self._tags[key] = {'type': value['type'], 'addr': value['addr'], 'multiplicador': value['multiplicador'], 'color':plot_color} 
     
     def stardDataRead(self, ip, port):
         """
@@ -58,9 +71,42 @@ class MainWidget(BoxLayout):
         try:
             while(self._updateWidgets):
                 # ler os dados MODBUS
+                self.readData()
                 # atualizar a interface
+                self.updateGUI()
                 # inserir os dados no banco de dados
                 sleep(self._scan_time/1000)     
         except Exception as e:
             self._modbusClient.close()
             print("Erro: ", e.args)       
+
+    def readData(self): # Ideia do readData é atualizar o atributo meas
+        """
+        Método para a leitura dos dados por meio do protocolo MODBUS
+        """
+        self._meas['timestamp'] = datetime.now() # o campo 'timestamp' recebe exatamente o horário corrente do sistema operacional
+
+        for key,value in self._tags.items():
+            if value['type'] == 'input_r':
+                self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
+
+            elif value['type'] == 'holding':  
+                self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
+
+            elif value['type'] == 'coil':
+                self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
+
+            else:
+                self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
+    def updateGUI(self):
+        """
+        Método para atualização da interface gráfica a partir dos dados lidos 
+        """
+        #Atualização dos labels das temperaturas
+        lista_plot = {'pot_entrada' : ' W', 'vz_entrada':' L/tempo' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
+        for key,value in self._tags.items():
+            if key in lista_plot:
+                self.ids[key].text = str(self._meas['values'][key]) + lista_plot[key]
+
+    def stopRefresh(self):
+        self._updateWidgets = False
