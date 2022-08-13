@@ -42,12 +42,36 @@
                 size: self.size
         Image:
             source: 'imgs/planodefundotemp.png'
-        Label:
+        TempLabel:
             id: pot_entrada
             text: '-.- W'
-            font_size : 22
-            bold: True
-            hallign: 'center'
             pos_hint: {'x': 0.27, 'y': -0.03}
-            color: 0,0,0,1 
+        TempLabel:
+            id: vz_entrada
+            text: '-.-vazão'
+            pos_hint: {'x': -0.3, 'y': +0.33}
+        TempLabel:
+            id: nivel
+            text: '-.- L'
+            pos_hint: {'x': 0.1, 'y': 0.4}
+        TempLabel:
+            id: rotacao
+            text: '-.- rpm'
+            pos_hint: {'x': 0.28, 'y': 0.34}
+        TempLabel:
+            id: freq_mot
+            text: '-.- Hz'
+            pos_hint: {'x': 0.28, 'y': 0.10}
+        TempLabel:
+            id: temp_estator
+            text: '-.- °C'
+            pos_hint: {'x': 0.4, 'y': 0.34}
+            
 
+            
+
+<TempLabel@Label>:
+    font_size: 20
+    bold: True
+    halign: 'center'
+    color: 0,0,0,1
