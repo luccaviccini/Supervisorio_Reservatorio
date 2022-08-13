@@ -34,13 +34,16 @@
                 size_hint_y: None
                 height: 40
                 text: "Conectar"
+                on_release:
+                    root.clearInfo()
+                    app.root.stardDataRead(text_ip.text, int(text_porta.text))
             Button:
                 size_hint_y: None
                 height: 40
                 text: "Fechar" 
                 on_release:
                     root.dismiss() 
-                    
+                    root.clearInfo()
 
 <ScanPopup>:
     title: "Configurações ScanTime"
@@ -75,4 +78,12 @@
                 height: 40
                 text: "Fechar" 
                 on_release:
-                    root.dismiss()  
+                    root.dismiss()                                
+
+
+     
+     
+
+
+
+
