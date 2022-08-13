@@ -89,24 +89,26 @@ class MainWidget(BoxLayout):
         for key,value in self._tags.items():
             if value['type'] == 'input_r':
                 self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
-
+                print(key, self._meas['values'][key])
             elif value['type'] == 'holding':  
                 self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
-
+                print(key, self._meas['values'][key])
             elif value['type'] == 'coil':
                 self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
-
+                print(key, self._meas['values'][key])
             else:
                 self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
+                print(key, self._meas['values'][key])
+    
     def updateGUI(self):
         """
         Método para atualização da interface gráfica a partir dos dados lidos 
         """
         #Atualização dos labels das temperaturas
-        lista_plot = {'pot_entrada' : ' W', 'vz_entrada':' L/tempo' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
+        lista_plot_unidades = {'pot_entrada' : ' W', 'vz_entrada':' L/tempo' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
         for key,value in self._tags.items():
-            if key in lista_plot:
-                self.ids[key].text = str(self._meas['values'][key]) + lista_plot[key]
+            if key in lista_plot_unidades:
+                self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_unidades[key]
 
     def stopRefresh(self):
         self._updateWidgets = False
