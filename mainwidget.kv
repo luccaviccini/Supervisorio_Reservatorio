@@ -28,6 +28,11 @@
                 Button:
                     text: "Scan time"
                     on_release: root._scanPopup.open()
+                Button:
+                    text: "Motor"
+                    on_release: root._motorPopup.open()
+  
+
         Image: # terceira coisa na horizontal do cabecalho
             id: img_con
             size_hint_x: None
@@ -42,6 +47,8 @@
                 size: self.size
         Image:
             source: 'imgs/planodefundotemp.png'
+
+            
         TempLabel:
             id: pot_entrada
             text: '-.- W'
@@ -66,7 +73,9 @@
             id: temp_estator
             text: '-.- °C'
             pos_hint: {'x': 0.4, 'y': 0.34}
-            
+
+
+
 
             
 

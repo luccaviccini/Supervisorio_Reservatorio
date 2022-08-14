@@ -1,5 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
-from popups import ModbusPopup, ScanPopup
+from popups import ModbusPopup, ScanPopup, MotorPopup
 from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
@@ -24,9 +24,11 @@ class MainWidget(BoxLayout):
         super().__init__()
         self._scan_time = kwargs.get('scan_time')
         self._serverIP = kwargs.get('server_ip')
-        self._serverPort = kwargs.get('server_port')        
+        self._serverPort = kwargs.get('server_port') 
+              
         self._modbusPopup = ModbusPopup(self._serverIP,self._serverPort)
         self._scanPopup = ScanPopup(scantime = self._scan_time)
+        self._motorPopup = MotorPopup()
         self._modbusClient = ModbusClient(host = self._serverIP,port = self._serverPort)
         self._meas = {} # Esse atributo irá possuir as medições atuais (Dicionário)
         self._meas['timestamp'] = None # Irá possuir um campo chamado 'timestamp'
@@ -53,10 +55,13 @@ class MainWidget(BoxLayout):
             Window.set_system_cursor("wait")
             self._modbusClient.open()
             Window.set_system_cursor("arrow")
+            
             if self._modbusClient.is_open:
                 self._updateThread = Thread(target=self.updater)
                 self._updateThread.start()
                 self.ids.img_con.source = "imgs/conectado.png"
+                self._motorPopup.ids.switch_motor.disabled = False
+                print (self._motorPopup.ids.switch_motor.disabled)
                 self._modbusPopup.dismiss()
             else:
                 self._modbusPopup.setInfo("Falha na conexão com o servidor")
@@ -71,7 +76,7 @@ class MainWidget(BoxLayout):
         try:
             while(self._updateWidgets):
                 #escrever no modbus_addrs
-                self.writeData('coil', 800, 1)
+                #self.writeData('coil', 800, 1)
                 # ler os dados MODBUS
                 self.readData()
                 # atualizar a interface
@@ -124,3 +129,10 @@ class MainWidget(BoxLayout):
 
     def stopRefresh(self):
         self._updateWidgets = False
+
+    def switch_click(self, switchObject, switchValue, type, addr):
+        if(switchValue):
+            self.writeData(type, addr, 1)
+        
+        else:
+            self.writeData(type, addr, 0)

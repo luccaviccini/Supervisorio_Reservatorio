@@ -80,9 +80,28 @@
                 on_release:
                     root.dismiss()                                
 
+<MotorPopup>:
+    title: "Configuraçao Motor"
+    size_hint_y: None
+    size_hint_x: 0.4
+    height: 150
+    BoxLayout:
+        Switch:
+            id: switch_motor
+            active: False
+            disabled: True
+            font_size: 20   
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}          
+            on_active: app.root.switch_click(self,self.active, 'coil', 800)     
+        Button:
+            id: bt_fechar_motor
+            text: "Fechar" 
+            size_hint: (0.7, 0.7) 
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}    
 
-     
-     
+            
+            on_release:
+                root.dismiss()     
 
 
 
