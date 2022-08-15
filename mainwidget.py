@@ -146,3 +146,5 @@ class MainWidget(BoxLayout):
         
         else:
             self.writeData(type, addr, 0)
+
+    

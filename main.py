@@ -40,7 +40,7 @@ class MainApp(App):
         Método executado quando a aplicação é fechada
         """
         self._widget.stopRefresh() 
-           
+
 if __name__ == "__main__":
     Builder.load_string(open("mainwidget.kv", encoding = "utf-8").read(), rulesonly = True)
     Builder.load_string(open("popups.kv", encoding = "utf-8").read(), rulesonly = True)

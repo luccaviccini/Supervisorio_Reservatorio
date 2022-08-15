@@ -46,32 +46,41 @@
             Rectangle:
                 size: self.size
         Image:
-            source: 'imgs/planodefundotemp.png'
+            source: 'imgs/Prancheta_105.png'
+        
+        Label:
+            id: lb_nivel_reservatorio
+            text: 'Reservatorio'
+            size: (100, 100)
+            color: 0.5373,0.8118, 1
+            pos_hint: {'x': -0.2, 'y': +0.33}
+             
+
            
         TempLabel:
             id: pot_entrada
             text: '-.- W'
-            pos_hint: {'x': 0.27, 'y': -0.03}
+            pos_hint: {'x': 0.42, 'y': 0.01}
         TempLabel:
             id: vz_entrada
             text: '-.-vazão'
-            pos_hint: {'x': -0.3, 'y': +0.33}
+            pos_hint: {'x': 0.42, 'y': -0.04}
         TempLabel:
             id: nivel
             text: '-.- L'
-            pos_hint: {'x': 0.1, 'y': 0.4}
+            pos_hint: {'x': 0.42, 'y': -0.09}
         TempLabel:
             id: rotacao
             text: '-.- rpm'
-            pos_hint: {'x': 0.28, 'y': 0.34}
+            pos_hint: {'x': 0.42, 'y': -0.14}
         TempLabel:
             id: freq_mot
             text: '-.- Hz'
-            pos_hint: {'x': 0.28, 'y': 0.10}
+            pos_hint: {'x': 0.42, 'y': -0.19}
         TempLabel:
             id: temp_estator
             text: '-.- °C'
-            pos_hint: {'x': 0.4, 'y': 0.34}
+            pos_hint: {'x': 0.42, 'y': -0.24}
         Button:
             size_hint:(None, None)
             size: (0.8*62, 0.8*58)   # a imagem tem 62x58 pixels
@@ -88,7 +97,7 @@
             
 
 <TempLabel@Label>:
-    font_size: 20
+    font_size: 18
     bold: True
     halign: 'center'
     color: 0,0,0,1
