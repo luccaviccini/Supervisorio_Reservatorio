@@ -114,7 +114,17 @@
                 text:'Solenoide_3'
             MySwitch:
                 id: sol_3        
-                on_active: app.root.switch_click(self,self.active, 'coil', 803)                   
+                on_active: app.root.switch_click(self,self.active, 'coil', 803)
+        BoxLayout:
+            orientation: "vertical"
+            Label:
+                text:'Set Point '
+            TextInput:
+                id: txt_set_point 
+                id: txt_st 
+                font_size: 14
+                halign: "center"
+                valign: "middle"
         Button:
             id: bt_fechar_motor
             text: "Fechar" 
