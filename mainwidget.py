@@ -1,11 +1,12 @@
 from kivy.uix.boxlayout import BoxLayout
-from popups import ModbusPopup, ScanPopup, MotorPopup
+from popups import ModbusPopup, ScanPopup, ControlePopup, DataGraphPopup
 from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
 from time import sleep
 from datetime import datetime
 import random
+from timeseriesgraph import TimeSeriesGraph
 
 
 class MainWidget(BoxLayout):
@@ -15,6 +16,7 @@ class MainWidget(BoxLayout):
     _updateThread = None
     _updateWidgets = True
     _tags ={}
+    _max_points = 20
     
     
     def __init__(self, **kwargs):
@@ -28,19 +30,20 @@ class MainWidget(BoxLayout):
               
         self._modbusPopup = ModbusPopup(self._serverIP,self._serverPort)
         self._scanPopup = ScanPopup(scantime = self._scan_time)
-        self._motorPopup = MotorPopup()
+        self._controlePopup = ControlePopup()
         self._modbusClient = ModbusClient(host = self._serverIP,port = self._serverPort)
         self._meas = {} # Esse atributo irá possuir as medições atuais (Dicionário)
         self._meas['timestamp'] = None # Irá possuir um campo chamado 'timestamp'
         self._meas['values'] = {} # Irá possuir um campo chamado 'values', os valores das várias tags do sistema
 
         for key,value in kwargs.get('modbus_addrs').items(): # Fazemos uma leitura no dicionário 'modbus_addrs'
-            if key == 'estado_mot': # Se a tag for 'estado_mot', faça...
-                plot_color = (1,0,0,1)
+            if key == 'nivel': # Se a tag for 'estado_mot', faça...
+                plot_color = (0,0,1,1)
             else:
                 plot_color = (random.random(),random.random(),random.random(),1)
             self._tags[key] = {'type': value['type'], 'addr': value['addr'], 'multiplicador': value['multiplicador'], 'color':plot_color} 
-    
+
+        self._graph = DataGraphPopup(self._max_points, self._tags['nivel']['color'])
     def stardDataRead(self, ip, port):
         """
         Método utilizado para a configuração do IP e Porta do servidor MODBUS e 
@@ -60,8 +63,11 @@ class MainWidget(BoxLayout):
                 self._updateThread = Thread(target=self.updater)
                 self._updateThread.start()
                 self.ids.img_con.source = "imgs/conectado.png"
-                self._motorPopup.ids.switch_motor.disabled = False
-                print (self._motorPopup.ids.switch_motor.disabled)
+                self._controlePopup.ids.switch_motor.disabled = False
+                self._controlePopup.ids.sol_1.disabled = False
+                self._controlePopup.ids.sol_2.disabled = False
+                self._controlePopup.ids.sol_3.disabled = False
+                
                 self._modbusPopup.dismiss()
             else:
                 self._modbusPopup.setInfo("Falha na conexão com o servidor")
@@ -126,6 +132,9 @@ class MainWidget(BoxLayout):
         for key,value in self._tags.items():
             if key in lista_plot_unidades:
                 self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_unidades[key]
+
+        #Atualização do gráfico
+        self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']/self._tags['nivel']['multiplicador']),0) 
 
     def stopRefresh(self):
         self._updateWidgets = False

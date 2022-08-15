@@ -29,8 +29,8 @@
                     text: "Scan time"
                     on_release: root._scanPopup.open()
                 Button:
-                    text: "Motor"
-                    on_release: root._motorPopup.open()
+                    text: "Controle"
+                    on_release: root._controlePopup.open()
   
 
         Image: # terceira coisa na horizontal do cabecalho
@@ -47,8 +47,7 @@
                 size: self.size
         Image:
             source: 'imgs/planodefundotemp.png'
-
-            
+           
         TempLabel:
             id: pot_entrada
             text: '-.- W'
@@ -73,7 +72,16 @@
             id: temp_estator
             text: '-.- °C'
             pos_hint: {'x': 0.4, 'y': 0.34}
+        Button:
+            size_hint:(None, None)
+            size: (0.8*62, 0.8*58)   # a imagem tem 62x58 pixels
+            background_normal: 'imgs/graph_icon.jpg'
+            background_down: 'imgs/graph_icon.jpg'
+            pos_hint: {'x':0.002, 'y': 0.002}
+            on_release:
+                root._graph.open()
 
+            
 
 
 
