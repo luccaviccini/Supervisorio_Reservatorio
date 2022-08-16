@@ -127,19 +127,20 @@ class MainWidget(BoxLayout):
         """
         Método para atualização da interface gráfica a partir dos dados lidos 
         """
-        #Atualização dos labels das temperaturas
+        #Atualização dos labels das variaveis
         lista_plot_unidades = {'pot_entrada' : ' W', 'vz_entrada':' L/s' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
         for key,value in self._tags.items():
             if key in lista_plot_unidades:
                 self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_unidades[key]
 
-        #Atualização do nível do termômetro
+        #Atualização do nível do reservatorio
         self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel']/self._tags['nivel']['multiplicador'])*199/1000)
         
         #Atualização do gráfico
         self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']/self._tags['nivel']['multiplicador']),0)
         #self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']/self._tags['vz_entrada']['multiplicador']),0) 
-
+        
+        # Atualização da imagem do estado do botão
         self.check_motor_state(self._meas['values']['estado_mot'])   
     def stopRefresh(self):
         self._updateWidgets = False
