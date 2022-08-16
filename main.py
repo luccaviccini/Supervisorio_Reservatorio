@@ -30,7 +30,9 @@ class MainApp(App):
             'Solenoide_1' : {'type': 'coil'     , 'addr': 801, 'multiplicador': None },
             'Solenoide_2' : {'type': 'coil'     , 'addr': 802, 'multiplicador': None },
             'Solenoide_3' : {'type': 'coil'     , 'addr': 803, 'multiplicador': None }       
-        }     
+        },
+        
+        db_path = "D:\\Users\\julio\\Documents\\github\\Supervisorio_Reservatorio\\db\\scada.db"   
         
         )
         return self._widget

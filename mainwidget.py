@@ -1,5 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
-from popups import ModbusPopup, ScanPopup, ControlePopup, DataGraphPopup
+from popups import ModbusPopup, ScanPopup, ControlePopup, DataGraphPopup, HistGraphPopup
 from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
@@ -7,6 +7,8 @@ from time import sleep
 from datetime import datetime
 import random
 from timeseriesgraph import TimeSeriesGraph
+from bdhandler import DBHandler
+from kivy_garden.graph import LinePlot
 
 
 class MainWidget(BoxLayout):
@@ -44,6 +46,9 @@ class MainWidget(BoxLayout):
             self._tags[key] = {'type': value['type'], 'addr': value['addr'], 'multiplicador': value['multiplicador'], 'color':plot_color} 
 
         self._graph = DataGraphPopup(self._max_points, self._tags['nivel']['color'])
+        self._hgraph = HistGraphPopup(tags=self._tags)
+        self._db = DBHandler(kwargs.get('db_path'), self._tags)
+        
     def stardDataRead(self, ip, port):
         """
         Método utilizado para a configuração do IP e Porta do servidor MODBUS e 
@@ -87,7 +92,7 @@ class MainWidget(BoxLayout):
                 self.readData()
                 # atualizar a interface
                 self.updateGUI()
-                # inserir os dados no banco de dados
+                self._db.insertData(self._meas)
                 sleep(self._scan_time/1000)     
         except Exception as e:
             self._modbusClient.close()
@@ -159,7 +164,53 @@ class MainWidget(BoxLayout):
         else:
             self.writeData(type, addr, 0)    
 
+    # Adicionei aqui a parte de Banco de Dados
     def check_motor_state(self, motor_state):
         if not(motor_state):
             self.ids.tb_motor.state = 'normal'
-            
+          
+    def getDataDB(self):
+        """
+        Método que coleta as informações da interface fornecidas pelo usuário
+        e requisita a busca no BD
+        """
+        try:
+            init_t = self.parseDTString(self._hgraph.ids.txt_init_time.text) # Transcrever para a maneira que o banco de dados aceita
+            final_t = self.parseDTString(self._hgraph.ids.txt_final_time.text) # Transcrever para a maneira que o banco de dados aceita
+            cols = []
+            for sensor in self._hgraph.ids.sensores.children: # Varre todas os ids filhos do id pai "sensores"
+                if sensor.ids.checkbox.active: # Se o check box estiver ativo
+                    cols.append(sensor.id) #
+                    
+            if init_t is None or final_t is None or len(cols)==0:
+                return
+                
+            cols.append('timestamp')
+                
+            dados = self._db.selectData(cols, init_t, final_t)
+                
+            if dados is None or len(dados['timestamp']) == 0:
+                return
+
+            self._hgraph.ids.graph.clearPlots()
+                
+            for key, value in dados.items():
+                if key == 'timestamp':
+                    continue
+                p = LinePlot(line_width=1.5, color=self._tags[key]['color'])
+                p.points = [(x, value[x]) for x in range(0,len(value))]
+                self._hgraph.ids.graph.add_plot(p) # Adicionamos o gráfico
+            self._hgraph.ids.graph.xmax = len(dados[cols[0]])
+            self._hgraph.ids.graph.update_x_labels([datetime.strptime(x,"%Y-%m-%d %H:%M:%S.%f") for x in dados['timestamp']]) # Conversão para datetime, pois o método operado com parâmetros em datetime
+        except Exception as e:
+            print("Erro: ", e.args)
+                
+    def parseDTString(self,datetime_str):
+        """
+        Método que converte a string inserida pelo usuário para o formato utilizado na busca dos dados no BD
+        """
+        try:
+            d = datetime.strptime(datetime_str, '%d/%m/%Y %H:%M:%S')
+            return d.strftime("%Y-%m-%d %H:%M:%S")
+        except Exception as e:
+            print("Erro: ", e.args)
