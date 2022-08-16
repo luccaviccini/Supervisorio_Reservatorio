@@ -102,11 +102,11 @@ class MainWidget(BoxLayout):
         for key,value in self._tags.items():
             if value['type'] == 'input_r':
                 self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
-                print(key, self._meas['values'][key])
+                #print(key, self._meas['values'][key])
 
             elif value['type'] == 'holding':  
                 self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
-                print(key, self._meas['values'][key])
+                #print(key, self._meas['values'][key])
 
             elif value['type'] == 'coil':
                 self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
@@ -114,7 +114,7 @@ class MainWidget(BoxLayout):
 
             else:
                 self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
-                print(key, self._meas['values'][key])
+                #print(key, self._meas['values'][key])
     def writeData(self, type, addr, value):
         """
         Método para escrita de dados  por meio do protocolo MODBUS
@@ -128,15 +128,19 @@ class MainWidget(BoxLayout):
         Método para atualização da interface gráfica a partir dos dados lidos 
         """
         #Atualização dos labels das temperaturas
-        lista_plot_unidades = {'pot_entrada' : ' W', 'vz_entrada':' L/tempo' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
+        lista_plot_unidades = {'pot_entrada' : ' W', 'vz_entrada':' L/s' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
         for key,value in self._tags.items():
             if key in lista_plot_unidades:
                 self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_unidades[key]
 
+        #Atualização do nível do termômetro
+        self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel']/self._tags['nivel']['multiplicador'])*199/1000)
+        
         #Atualização do gráfico
         self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']/self._tags['nivel']['multiplicador']),0)
         #self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']/self._tags['vz_entrada']['multiplicador']),0) 
 
+        self.check_motor_state(self._meas['values']['estado_mot'])   
     def stopRefresh(self):
         self._updateWidgets = False
 
@@ -147,4 +151,15 @@ class MainWidget(BoxLayout):
         else:
             self.writeData(type, addr, 0)
 
-    
+    def toggle_click(self,state, type, addr):
+        print(state)
+        if(state=='down'):
+            self.writeData(type, addr, 1)
+        
+        else:
+            self.writeData(type, addr, 0)    
+
+    def check_motor_state(self, motor_state):
+        if not(motor_state):
+            self.ids.tb_motor.state = 'normal'
+            

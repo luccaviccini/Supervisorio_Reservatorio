@@ -45,42 +45,45 @@
                 rgb: 1,1,1
             Rectangle:
                 size: self.size
-        Image:
-            source: 'imgs/Prancheta_105.png'
-        
         Label:
-            id: lb_nivel_reservatorio
-            text: 'Reservatorio'
-            size: (100, 100)
-            color: 0.5373,0.8118, 1
-            pos_hint: {'x': -0.2, 'y': +0.33}
-             
+            id: lb_reservatorio
+            size_hint: (None, None)
+            size: (188,199)
+            pos_hint: {'x': 0.3225, 'y': 0.54}
+            canvas:
+                Color: 
+                    rgb: 0.5,0.8,1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
 
-           
+        Image:
+            source: 'imgs/Prancheta___1.png'
+  
         TempLabel:
             id: pot_entrada
             text: '-.- W'
-            pos_hint: {'x': 0.42, 'y': 0.01}
+            pos_hint: {'x': 0.32, 'y': 0.2}
         TempLabel:
             id: vz_entrada
             text: '-.-vazão'
-            pos_hint: {'x': 0.42, 'y': -0.04}
+            pos_hint: {'x':-0.40, 'y': 0.25}
         TempLabel:
             id: nivel
             text: '-.- L'
-            pos_hint: {'x': 0.42, 'y': -0.09}
+            pos_hint: {'x': 0.01, 'y': 0.07}
         TempLabel:
             id: rotacao
             text: '-.- rpm'
-            pos_hint: {'x': 0.42, 'y': -0.14}
+            pos_hint: {'x': 0.32, 'y': 0.15}
         TempLabel:
             id: freq_mot
             text: '-.- Hz'
-            pos_hint: {'x': 0.42, 'y': -0.19}
+            pos_hint: {'x': 0.32, 'y': 0.10}
         TempLabel:
             id: temp_estator
             text: '-.- °C'
-            pos_hint: {'x': 0.42, 'y': -0.24}
+            pos_hint: {'x': 0.32, 'y': 0.05}
         Button:
             size_hint:(None, None)
             size: (0.8*62, 0.8*58)   # a imagem tem 62x58 pixels
@@ -90,6 +93,40 @@
             on_release:
                 root._graph.open()
 
+        MyToggleButton:
+            id: tb_motor            
+            pos_hint: {'x':0.7, 'y': 0.78}
+            on_press:
+                app.root.toggle_click(self.state, 'coil', 800)
+            on_release:
+                app.root.toggle_click(self.state, 'coil', 800)
+
+        MyToggleButton:
+            id: solenoide_1            
+            pos_hint: {'x':0.001, 'y': 0.49}
+            on_press:
+                app.root.toggle_click(self.state, 'coil', 801)
+            on_state:
+                app.root.toggle_click(self.state, 'coil', 801)
+
+        MyToggleButton:
+            id: solenoide_2            
+            pos_hint: {'x':0.001, 'y': 0.355}
+            on_press:
+                app.root.toggle_click(self.state, 'coil', 802)
+            on_state:
+                app.root.toggle_click(self.state, 'coil', 802)
+
+        MyToggleButton:
+            id: solenoide_3            
+            pos_hint: {'x':0.001, 'y': 0.21}
+            on_press:
+                app.root.toggle_click(self.state, 'coil', 803)
+            on_state:
+                app.root.toggle_click(self.state, 'coil', 803)
+
+
+
             
 
 
@@ -97,7 +134,15 @@
             
 
 <TempLabel@Label>:
+    state: 'down'
     font_size: 18
     bold: True
     halign: 'center'
     color: 0,0,0,1
+
+<MyToggleButton@ToggleButton>:
+    disabled: False
+    state: 'normal'
+    background_normal: 'imgs/toggle_off.png'
+    background_down: 'imgs/toggle_on.png'
+    size_hint: (0.12,0.18)
