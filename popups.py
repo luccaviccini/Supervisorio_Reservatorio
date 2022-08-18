@@ -52,3 +52,16 @@ class DataGraphPopup(Popup):
     
 class LabeledCheckBoxDataGraph(BoxLayout):
     pass
+
+class HistGraphPopup(Popup):
+    def __init__(self,**kwargs):
+        super().__init__()
+        for key, value in kwargs.get('tags').items():
+            cb = LabeledCheckBoxHistGraph()
+            cb.ids.label.text = key
+            cb.ids.label.color = value['color']
+            cb.id = key
+            self.ids.sensores.add_widget(cb) # Adiciona os widgets de acordo com as tags
+            
+class LabeledCheckBoxHistGraph(BoxLayout):
+    pass

@@ -124,6 +124,12 @@
                 app.root.toggle_click(self.state, 'coil', 803)
             on_state:
                 app.root.toggle_click(self.state, 'coil', 803)
+        Button:
+            text: 'Dados Históricos'
+            pos_hint: {'right':1, 'down':1}
+            size_hint: (0.2,0.05) # 20% de largura e 5% de altura do widget pai
+            on_release:
+                root._hgraph.open()
 
 
 
