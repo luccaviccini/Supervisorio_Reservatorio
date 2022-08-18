@@ -105,21 +105,39 @@ class MainWidget(BoxLayout):
         self._meas['timestamp'] = datetime.now() # o campo 'timestamp' recebe exatamente o horário corrente do sistema operacional
 
         for key,value in self._tags.items():
-            if value['type'] == 'input_r':
-                self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
-                #print(key, self._meas['values'][key])
+            if (value['multiplicador']==  None):
+                if value['type'] == 'input_r':
+                    self._meas['values'][key] = self._modbusClient.read_input_registers(value['addr'],1)[0] # Leitura de um Input Register (Aula de Modbus)
+                    #print(key, self._meas['values'][key])
 
-            elif value['type'] == 'holding':  
-                self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
-                #print(key, self._meas['values'][key])
+                elif value['type'] == 'holding':  
+                    self._meas['values'][key] = self._modbusClient.read_holding_registers(value['addr'],1)[0] # Leitura de um Holding Register (Aula de Modbus)
+                    #print(key, self._meas['values'][key])
 
-            elif value['type'] == 'coil':
-                self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
-                #print(key, self._meas['values'][key])
+                elif value['type'] == 'coil':
+                    self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
+                    #print(key, self._meas['values'][key])
 
+                else:
+                    self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
+                #print(key, self._meas['values'][key])
             else:
-                self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
-                #print(key, self._meas['values'][key])
+                if value['type'] == 'input_r':
+                    self._meas['values'][key] = (self._modbusClient.read_input_registers(value['addr'],1)[0])/value['multiplicador'] # Leitura de um Input Register (Aula de Modbus)
+                    #print(key, self._meas['values'][key])
+
+                elif value['type'] == 'holding':  
+                    self._meas['values'][key] = (self._modbusClient.read_holding_registers(value['addr'],1)[0])/value['multiplicador'] # Leitura de um Holding Register (Aula de Modbus)
+                    #print(key, self._meas['values'][key])
+
+                elif value['type'] == 'coil':
+                    self._meas['values'][key] = (self._modbusClient.read_coils(value['addr'],1)[0])/value['multiplicador'] # Leitura de um Coil
+                    #print(key, self._meas['values'][key])
+
+                else:
+                    self._meas['values'][key] = (self._modbusClient.read_discrete_inputs(value['addr'],1)[0])/value['multiplicador'] # Leitura de um Discrete Inputs
+                #print(key, self._meas['values'][key])                
+
     def writeData(self, type, addr, value):
         """
         Método para escrita de dados  por meio do protocolo MODBUS
@@ -139,16 +157,16 @@ class MainWidget(BoxLayout):
         lista_plot_main = { 'vz_entrada':' L/s' , 'nivel': ' L'}
         for key,value in self._tags.items():
             if key in lista_plot_main:
-                self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_main[key]
+                self.ids[key].text = str((self._meas['values'][key])) + lista_plot_main[key]
             if key in lista_plot_popup:    
-                self._infoPopup.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_popup[key]
+                self._infoPopup.ids[key].text = str((self._meas['values'][key])) + lista_plot_popup[key]
             if key == 'nivel':
-                self.controle(self._nivel_agua,(self._meas['values'][key])/self._tags[key]['multiplicador'])
+                self.controle(self._nivel_agua,(self._meas['values'][key]))
         #Atualização do nível da agua
-        self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel']/self._tags['nivel']['multiplicador'])*199/1000)
+        self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel'])*199/1000)
         
         #Atualização do gráfico
-        self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']/self._tags['nivel']['multiplicador']),0)
+        self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']),0)
         #self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']/self._tags['vz_entrada']['multiplicador']),0) 
 
         self.check_motor_state(self._meas['values']['estado_mot'])
