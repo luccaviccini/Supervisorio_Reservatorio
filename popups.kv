@@ -80,67 +80,56 @@
                 on_release:
                     root.dismiss()                                
 
-<ControlePopup>:
-    title: "Configuraçao dos Switches"
-    size_hint_y: None
-    size_hint_x: 0.8
+
+
+
+<InfoPopup>:
+    title: "Informações adicionais Motor"
+    size_hint_x: 0.6
     height: 150
     BoxLayout:
-        orientation: "horizontal"
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                text:'Switch Motor'
-            MySwitch:
-                id: switch_motor        
-                on_active: app.root.switch_click(self,self.active, 'coil', 800) 
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                text:'Solenoide_1'
-            MySwitch:
-                id: sol_1        
-                on_active: app.root.switch_click(self,self.active, 'coil', 801) 
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                text:'Solenoide_2'
-            MySwitch:
-                id: sol_2        
-                on_active: app.root.switch_click(self,self.active, 'coil', 802) 
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                text:'Solenoide_3'
-            MySwitch:
-                id: sol_3        
-                on_active: app.root.switch_click(self,self.active, 'coil', 803)
-        BoxLayout:
-            orientation: "vertical"
-            Label:
-                text:'Set Point '
-            TextInput:
-                id: txt_set_point 
-                id: txt_st 
-                font_size: 14
+        orientation: "vertical"
+        GridLayout:
+            cols: 2
+            rows: 4
+            MyLabel:
+                text:'Potência'
                 halign: "center"
                 valign: "middle"
-        Button:
-            id: bt_fechar_motor
-            text: "Fechar" 
-            size_hint: (0.7, 0.7) 
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}    
 
-            
-            on_release:
-                root.dismiss()     
+            MyLabel:
+                id: pot_entrada
+                text: '-.- W'
+
+            MyLabel:
+                text:'Rotação'
+                halign: "center"
+                valign: "middle"
+            MyLabel:
+                id: rotacao
+                text: '-.- rpm'
+            MyLabel:
+                text:'Frequencia Motor: '
+                halign: "center"
+                valign: "middle"
+            MyLabel:
+                id: freq_mot
+                text: '-.- Hz'
+            MyLabel:
+                text: 'Temperatura Estator: '
+                halign: "center"
+                valign: "middle"                
+            MyLabel:
+                id: temp_estator
+                text: '-.- °C'
 
 
-<MySwitch@Switch>:
-    active: False
-    disabled: True
-    font_size: 20   
-    pos_hint: {'center_x': 0.5, 'center_y': 0.5} 
+
+<MyLabel@Label>:
+    font_size: 18
+    bold: True    
+    color: 1,1,1,1
+
 
 <DataGraphPopup>:
     title: "Gráfico do Nível do Reservatório"

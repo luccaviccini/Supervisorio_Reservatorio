@@ -36,7 +36,7 @@ class ScanPopup(Popup):
         super().__init__(**kwargs) #inicializando o construtor da classe base (Kivy)
         self.ids.txt_st.text = str(scantime)
         
-class ControlePopup(Popup):
+class InfoPopup(Popup):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs) #inicializando o construtor da classe base (Kivy)

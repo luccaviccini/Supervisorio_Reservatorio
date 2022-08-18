@@ -1,5 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
-from popups import ModbusPopup, ScanPopup, ControlePopup, DataGraphPopup, HistGraphPopup
+from popups import ModbusPopup, ScanPopup, InfoPopup, DataGraphPopup, HistGraphPopup
 from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
@@ -32,7 +32,7 @@ class MainWidget(BoxLayout):
               
         self._modbusPopup = ModbusPopup(self._serverIP,self._serverPort)
         self._scanPopup = ScanPopup(scantime = self._scan_time)
-        self._controlePopup = ControlePopup()
+        self._infoPopup = InfoPopup()
         self._modbusClient = ModbusClient(host = self._serverIP,port = self._serverPort)
         self._meas = {} # Esse atributo irá possuir as medições atuais (Dicionário)
         self._meas['timestamp'] = None # Irá possuir um campo chamado 'timestamp'
@@ -67,12 +67,7 @@ class MainWidget(BoxLayout):
             if self._modbusClient.is_open:
                 self._updateThread = Thread(target=self.updater)
                 self._updateThread.start()
-                self.ids.img_con.source = "imgs/conectado.png"
-                self._controlePopup.ids.switch_motor.disabled = False
-                self._controlePopup.ids.sol_1.disabled = False
-                self._controlePopup.ids.sol_2.disabled = False
-                self._controlePopup.ids.sol_3.disabled = False
-                
+                self.ids.img_con.source = "imgs/conectado.png"                
                 self._modbusPopup.dismiss()
             else:
                 self._modbusPopup.setInfo("Falha na conexão com o servidor")
@@ -115,7 +110,7 @@ class MainWidget(BoxLayout):
 
             elif value['type'] == 'coil':
                 self._meas['values'][key] = self._modbusClient.read_coils(value['addr'],1)[0] # Leitura de um Coil
-                print(key, self._meas['values'][key])
+                #print(key, self._meas['values'][key])
 
             else:
                 self._meas['values'][key] = self._modbusClient.read_discrete_inputs(value['addr'],1)[0] # Leitura de um Discrete Inputs
@@ -132,13 +127,16 @@ class MainWidget(BoxLayout):
         """
         Método para atualização da interface gráfica a partir dos dados lidos 
         """
-        #Atualização dos labels das temperaturas
-        lista_plot_unidades = {'pot_entrada' : ' W', 'vz_entrada':' L/s' , 'nivel': ' L' , 'rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
+        #Atualização dos labels das infos
+        lista_plot_popup = {'pot_entrada' : ' W','rotacao': ' rpm', 'freq_mot': ' Hz', 'temp_estator': ' ºC'}
+        lista_plot_main = { 'vz_entrada':' L/s' , 'nivel': ' L'}
         for key,value in self._tags.items():
-            if key in lista_plot_unidades:
-                self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_unidades[key]
+            if key in lista_plot_main:
+                self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_main[key]
+            if key in lista_plot_popup:    
+                self._infoPopup.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_popup[key]
 
-        #Atualização do nível do termômetro
+        #Atualização do nível da agua
         self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel']/self._tags['nivel']['multiplicador'])*199/1000)
         
         #Atualização do gráfico
@@ -157,7 +155,7 @@ class MainWidget(BoxLayout):
             self.writeData(type, addr, 0)
 
     def toggle_click(self,state, type, addr):
-        print(state)
+        
         if(state=='down'):
             self.writeData(type, addr, 1)
         

@@ -28,9 +28,7 @@
                 Button:
                     text: "Scan time"
                     on_release: root._scanPopup.open()
-                Button:
-                    text: "Controle"
-                    on_release: root._controlePopup.open()
+
   
 
         Image: # terceira coisa na horizontal do cabecalho
@@ -60,10 +58,7 @@
         Image:
             source: 'imgs/Prancheta___1.png'
   
-        TempLabel:
-            id: pot_entrada
-            text: '-.- W'
-            pos_hint: {'x': 0.32, 'y': 0.2}
+
         TempLabel:
             id: vz_entrada
             text: '-.-vazão'
@@ -72,19 +67,9 @@
             id: nivel
             text: '-.- L'
             pos_hint: {'x': 0.01, 'y': 0.07}
-        TempLabel:
-            id: rotacao
-            text: '-.- rpm'
-            pos_hint: {'x': 0.32, 'y': 0.15}
-        TempLabel:
-            id: freq_mot
-            text: '-.- Hz'
-            pos_hint: {'x': 0.32, 'y': 0.10}
-        TempLabel:
-            id: temp_estator
-            text: '-.- °C'
-            pos_hint: {'x': 0.32, 'y': 0.05}
+
         Button:
+            id: bt_live_graph
             size_hint:(None, None)
             size: (0.8*62, 0.8*58)   # a imagem tem 62x58 pixels
             background_normal: 'imgs/graph_icon.jpg'
@@ -92,6 +77,17 @@
             pos_hint: {'x':0.002, 'y': 0.002}
             on_release:
                 root._graph.open()
+        Button:
+            id: bt_info_motor
+            size_hint:(None, None)
+            size: (0.06*1024,0.06*1024)   # a imagem tem 62x58 pixels
+            background_normal: 'imgs/info2.png'
+            background_down: 'imgs/info2.png'
+            pos_hint: {'x':0.7, 'y': 0.57}
+            on_release:
+                root._infoPopup.open()
+
+
 
         MyToggleButton:
             id: tb_motor            
