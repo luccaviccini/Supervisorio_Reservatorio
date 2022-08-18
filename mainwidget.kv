@@ -62,7 +62,7 @@
         TempLabel:
             id: vz_entrada
             text: '-.-vazão'
-            pos_hint: {'x':-0.40, 'y': 0.25}
+            pos_hint: {'x':0.120, 'y': 0.31}
         TempLabel:
             id: nivel
             text: '-.- L'
@@ -74,7 +74,7 @@
             size: (0.8*62, 0.8*58)   # a imagem tem 62x58 pixels
             background_normal: 'imgs/graph_icon.jpg'
             background_down: 'imgs/graph_icon.jpg'
-            pos_hint: {'x':0.002, 'y': 0.002}
+            pos_hint: {'x':0.002, 'y': 0.06}
             on_release:
                 root._graph.open()
         Button:
@@ -130,7 +130,7 @@
                 app.root.toggle_click(self.state, 'coil', 803)
         Button:
             text: 'Dados Históricos'
-            pos_hint: {'right':1, 'down':1}
+            pos_hint: {'left':0.7, 'down':1}
             size_hint: (0.2,0.05) # 20% de largura e 5% de altura do widget pai
             on_release:
                 root._hgraph.open()

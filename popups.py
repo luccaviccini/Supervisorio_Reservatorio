@@ -48,17 +48,22 @@ class SettingsPopup(Popup):
         super().__init__(**kwargs) #inicializando o construtor da classe base (Kivy)
         self.ids.txt_nivel.text = str(nivel_agua)
         self.ids.txt_freq.text = str(freq_motor)
+    def Status_config(self):
+        self.label = Label(text = "Configurado com Sucesso")
+        self._settingsPopup.add_widget(self.label)
         
         
 
 class DataGraphPopup(Popup):
     
-    def __init__(self,xmax, plot_color,**kwargs):
+    def __init__(self,xmax, plot_color1, plot_color2,**kwargs):
         super().__init__(**kwargs)
-        self.plot = LinePlot(line_width=2, color = plot_color)
-        self.ids.graph.add_plot(self.plot)
+        self.plot1 = LinePlot(line_width=2, color = plot_color1)
+        self.ids.graph.add_plot(self.plot1)
         self.ids.graph.xmax = xmax
-    
+        self.plot2 = LinePlot(line_width=2, color = plot_color2)
+        self.ids.graph.add_plot(self.plot2)   
+
 class LabeledCheckBoxDataGraph(BoxLayout):
     pass
 

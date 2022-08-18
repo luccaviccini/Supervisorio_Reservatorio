@@ -134,14 +134,15 @@
     title: "Configurações Usuário"
     size_hint_y: None
     size_hint_x: 0.4
-    height: 200
+    height: 230
+    
     BoxLayout:
         orientation: "vertical"
         GridLayout:
             cols: 2
             rows: 2
             Label:
-                text: "Nível [L]"
+                text: "Litros [L]"
                 font_size: 14
             TextInput:
                 id: txt_nivel 
@@ -156,6 +157,17 @@
                 font_size: 14
                 halign: "center"
                 valign: "middle"
+
+        Label:
+            
+            id: lb_configura 
+            font_size: 14
+            bold: True    
+                 
+            halign: "center"
+            valign: "middle"
+                
+        
         BoxLayout:
             orientation: "horizontal"
             Button:
@@ -165,12 +177,15 @@
                 on_release:
                     app.root._nivel_agua = int(txt_nivel.text)
                     app.root._freq_motor = int(txt_freq.text)
+                    lb_configura.disabled = False
+                    lb_configura.text = "Configurado com Sucesso"
                     
             Button:
                 size_hint_y: None
                 height: 40
                 text: "Fechar" 
                 on_release:
+                    lb_configura.text = ""
                     root.dismiss()     
 
 
@@ -196,6 +211,8 @@
             xmin: 0
             ymin: 0
             ymax: 1100
+        
+
         BoxLayout:
             orientation:'horizontal'
             size_hint: (1,0.05)

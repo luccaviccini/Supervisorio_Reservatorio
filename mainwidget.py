@@ -9,7 +9,7 @@ import random
 from timeseriesgraph import TimeSeriesGraph
 from bdhandler import DBHandler
 from kivy_garden.graph import LinePlot
-
+from kivy.uix.label import Label
 
 class MainWidget(BoxLayout):
     """
@@ -48,7 +48,7 @@ class MainWidget(BoxLayout):
                 plot_color = (random.random(),random.random(),random.random(),1)
             self._tags[key] = {'type': value['type'], 'addr': value['addr'], 'multiplicador': value['multiplicador'], 'color':plot_color} 
 
-        self._graph = DataGraphPopup(self._max_points, self._tags['nivel']['color'])
+        self._graph = DataGraphPopup(self._max_points, self._tags['nivel']['color'],  self._tags['vz_entrada']['color'])
         self._hgraph = HistGraphPopup(tags=self._tags)
         self._db = DBHandler(kwargs.get('db_path'), self._tags)
         
@@ -72,6 +72,7 @@ class MainWidget(BoxLayout):
                 self._updateThread.start()
                 self.ids.img_con.source = "imgs/conectado.png"                
                 self._modbusPopup.dismiss()
+                
             else:
                 self._modbusPopup.setInfo("Falha na conexão com o servidor")
         except Exception as e:
@@ -167,10 +168,11 @@ class MainWidget(BoxLayout):
         
         #Atualização do gráfico
         self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']),0)
-        #self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']/self._tags['vz_entrada']['multiplicador']),0) 
+        self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']),1)
 
         self.check_motor_state(self._meas['values']['estado_mot'])
-          
+
+
     def stopRefresh(self):
         self._updateWidgets = False
 
@@ -195,7 +197,7 @@ class MainWidget(BoxLayout):
             self.ids.tb_motor.state = 'normal'
 
     def controle(self, nivel_desejado, nivel_atual):
-        tol= 0.99 # tolerancia do controle
+        tol= 0.97 # tolerancia do controle
         if (nivel_atual > tol*nivel_desejado):
             self.writeData('coil', 800, 0)       
         
@@ -246,3 +248,4 @@ class MainWidget(BoxLayout):
             return d.strftime("%Y-%m-%d %H:%M:%S")
         except Exception as e:
             print("Erro: ", e.args)
+
