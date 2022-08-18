@@ -179,11 +179,7 @@ class MainWidget(BoxLayout):
     def controle(self, nivel_desejado, nivel_atual):
         tol= 0.99 # tolerancia do controle
         if (nivel_atual > tol*nivel_desejado):
-            self.writeData('coil', 800, 0)
-
-
-
-        
+            self.writeData('coil', 800, 0)       
         
 
           

@@ -32,7 +32,7 @@ class MainApp(App):
             'Solenoide_3' : {'type': 'coil'     , 'addr': 803, 'multiplicador': None }       
         },
         
-        db_path = "C:\\Users\\lucca\\Desktop\\Github\\Supervisorio_Reservatorio\\db\\scada.db"   
+        db_path = "db\\scada.db"   
         
         )
         return self._widget
