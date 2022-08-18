@@ -130,6 +130,51 @@
     bold: True    
     color: 1,1,1,1
 
+<SettingsPopup>:
+    title: "Configurações Usuário"
+    size_hint_y: None
+    size_hint_x: 0.4
+    height: 200
+    BoxLayout:
+        orientation: "vertical"
+        GridLayout:
+            cols: 2
+            rows: 2
+            Label:
+                text: "Nível [L]"
+                font_size: 14
+            TextInput:
+                id: txt_nivel 
+                font_size: 14
+                halign: "center"
+                valign: "middle"
+            Label:
+                text: "Frequência[Hz]"
+                font_size: 14
+            TextInput:
+                id: txt_freq 
+                font_size: 14
+                halign: "center"
+                valign: "middle"
+        BoxLayout:
+            orientation: "horizontal"
+            Button:
+                size_hint_y: None
+                height: 40
+                text: "Configurar"
+                on_release:
+                    app.root._nivel_agua = int(txt_nivel.text)
+                    app.root._freq_motor = int(txt_freq.text)
+                    
+            Button:
+                size_hint_y: None
+                height: 40
+                text: "Fechar" 
+                on_release:
+                    root.dismiss()     
+
+
+    
 
 <DataGraphPopup>:
     title: "Gráfico do Nível do Reservatório"

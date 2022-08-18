@@ -1,5 +1,5 @@
 from kivy.uix.boxlayout import BoxLayout
-from popups import ModbusPopup, ScanPopup, InfoPopup, DataGraphPopup, HistGraphPopup
+from popups import ModbusPopup, ScanPopup, InfoPopup,SettingsPopup, DataGraphPopup, HistGraphPopup
 from pyModbusTCP.client import ModbusClient
 from kivy.core.window import Window
 from threading import Thread
@@ -28,11 +28,14 @@ class MainWidget(BoxLayout):
         super().__init__()
         self._scan_time = kwargs.get('scan_time')
         self._serverIP = kwargs.get('server_ip')
-        self._serverPort = kwargs.get('server_port') 
+        self._serverPort = kwargs.get('server_port')
+        self._nivel_agua = kwargs.get('nivel_agua') 
+        self._freq_motor = kwargs.get('freq_motor') 
               
         self._modbusPopup = ModbusPopup(self._serverIP,self._serverPort)
         self._scanPopup = ScanPopup(scantime = self._scan_time)
         self._infoPopup = InfoPopup()
+        self._settingsPopup = SettingsPopup(self._nivel_agua, self._freq_motor)
         self._modbusClient = ModbusClient(host = self._serverIP,port = self._serverPort)
         self._meas = {} # Esse atributo irá possuir as medições atuais (Dicionário)
         self._meas['timestamp'] = None # Irá possuir um campo chamado 'timestamp'
@@ -81,12 +84,14 @@ class MainWidget(BoxLayout):
         """
         try:
             while(self._updateWidgets):
-                #escrever no modbus_addrs
-                #self.writeData('coil', 800, 1)
+                #atualizando a frequencia desejada
+                self.writeData('holding', 799, self._freq_motor)
+
                 # ler os dados MODBUS
                 self.readData()
                 # atualizar a interface
                 self.updateGUI()
+
                 self._db.insertData(self._meas)
                 sleep(self._scan_time/1000)     
         except Exception as e:
@@ -122,6 +127,8 @@ class MainWidget(BoxLayout):
 
         if type == 'coil':
             return self._modbusClient.write_single_coil(addr, value)
+        if type == 'holding':
+            return self._modbusClient.write_single_register(addr, value)
           
     def updateGUI(self):
         """
@@ -135,7 +142,8 @@ class MainWidget(BoxLayout):
                 self.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_main[key]
             if key in lista_plot_popup:    
                 self._infoPopup.ids[key].text = str((self._meas['values'][key])/self._tags[key]['multiplicador']) + lista_plot_popup[key]
-
+            if key == 'nivel':
+                self.controle(self._nivel_agua,(self._meas['values'][key])/self._tags[key]['multiplicador'])
         #Atualização do nível da agua
         self.ids.lb_reservatorio.size = (self.ids.lb_reservatorio.size[0],(self._meas['values']['nivel']/self._tags['nivel']['multiplicador'])*199/1000)
         
@@ -143,7 +151,8 @@ class MainWidget(BoxLayout):
         self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['nivel']/self._tags['nivel']['multiplicador']),0)
         #self._graph.ids.graph.updateGraph((self._meas['timestamp'],self._meas['values']['vz_entrada']/self._tags['vz_entrada']['multiplicador']),0) 
 
-        self.check_motor_state(self._meas['values']['estado_mot'])   
+        self.check_motor_state(self._meas['values']['estado_mot'])
+          
     def stopRefresh(self):
         self._updateWidgets = False
 
@@ -166,6 +175,17 @@ class MainWidget(BoxLayout):
     def check_motor_state(self, motor_state):
         if not(motor_state):
             self.ids.tb_motor.state = 'normal'
+
+    def controle(self, nivel_desejado, nivel_atual):
+        tol= 0.99 # tolerancia do controle
+        if (nivel_atual > tol*nivel_desejado):
+            self.writeData('coil', 800, 0)
+
+
+
+        
+        
+
           
     def getDataDB(self):
         """

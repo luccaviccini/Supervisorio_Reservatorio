@@ -42,6 +42,15 @@ class InfoPopup(Popup):
         super().__init__(**kwargs) #inicializando o construtor da classe base (Kivy)
         
 
+class SettingsPopup(Popup):
+
+    def __init__(self,nivel_agua, freq_motor, **kwargs):
+        super().__init__(**kwargs) #inicializando o construtor da classe base (Kivy)
+        self.ids.txt_nivel.text = str(nivel_agua)
+        self.ids.txt_freq.text = str(freq_motor)
+        
+        
+
 class DataGraphPopup(Popup):
     
     def __init__(self,xmax, plot_color,**kwargs):

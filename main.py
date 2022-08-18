@@ -10,7 +10,7 @@ class MainApp(App):
         """
         Método que gera o aplicativo com o widget principal
         """
-        self._widget = MainWidget(scan_time=1000, server_ip = '127.0.0.1', server_port = 502,
+        self._widget = MainWidget(scan_time=1000, server_ip = '127.0.0.1', server_port = 502, nivel_agua = 950, freq_motor = 60,
         modbus_addrs = {
             #Lembrar de colocar None no if, quando for implementar, para não dividor/multiplicar
             #LEMBRAR DOS MULTIPLICADORES (Só mechi aqui)

@@ -80,13 +80,21 @@
         Button:
             id: bt_info_motor
             size_hint:(None, None)
-            size: (0.06*1024,0.06*1024)   # a imagem tem 62x58 pixels
+            size: (0.06*1024,0.06*1024)  
             background_normal: 'imgs/info2.png'
             background_down: 'imgs/info2.png'
             pos_hint: {'x':0.7, 'y': 0.57}
             on_release:
                 root._infoPopup.open()
-
+        Button:
+            id: bt_settings
+            size_hint:(None, None)
+            size: (0.04*2000,0.04*2000)
+            background_normal: 'imgs/settings.png'
+            background_down: 'imgs/settings.png'
+            pos_hint: {'x':0.9, 'y': 0.87}
+            on_release:
+                root._settingsPopup.open()
 
 
         MyToggleButton:
